@@ -44,7 +44,7 @@ a_min = (b*u_min)/(1+gamma*g(3))/m-c/m*v_max^2;
 vars.v_max = v_max; % Make struct to pass to functions later
 %% 2.2
 Vsamp = linspace(0, v_max, 200);
-alpha = 28; beta = 230;
+alpha = 35; beta = 230;
 vars.alpha = alpha; vars.beta = beta;
 
 P_2 = fricApprox(Vsamp, vars);
@@ -59,7 +59,7 @@ xlabel 'speed [m/s]'
 saveas(gcf,'Pics/Plot_2.2.jpg')
 
 %% 2.3
-x0 = [0;v_max];
+x0 = [0;10];
 u = @(t) 0.01 + u_max/2*sin(t/2/pi);
 [t_3_1,y_3_1] = ode45(@(t,y) modelExact(t,y,u,vars, "gearlock"), [0 t_end], x0);
 [t_3_2,y_3_2] = ode45(@(t,y) modelPWA(t,y,u,vars, "gearlock"), [0 t_end], x0);

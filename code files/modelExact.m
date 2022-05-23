@@ -5,13 +5,13 @@ ut = u(t);
 if mode == "gearlock"
     gear = 1;
 elseif y(2)<vars.v12
-    warning("Here I am in gear 1")
+%     warning("Here I am in gear 1")
     gear = 1;
 elseif y(2)<vars.v23
-    warning("Here I am in gear 2")
+%     warning("Here I am in gear 2")
     gear=2;
 else
-    warning("Here I am in gear 3")
+%     warning("Here I am in gear 3")
     gear=3;
 end
 
