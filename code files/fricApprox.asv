@@ -1,0 +1,15 @@
+function [P] = fricApprox(v, alpha, beta)
+%FRICAPPROX Approximates the friction force
+%   Symbol in report is P(v)
+
+P = zeros(size(v));
+
+boundaryIdx = max(find(Vsamp<alpha)); % Get switching point between functions
+
+P(1:boundaryIdx) = beta/alpha .* Vsamp(1:boundaryIdx);
+
+P(boundaryIdx+1:end) = (c*v_max^2 - beta)/(v_max - alpha) .* Vsamp(boundaryIdx+1:end)...
+    + v_max/(v_max-alpha)*beta - c*v_max^2/(v_max-alpha)*alpha;
+
+end
+

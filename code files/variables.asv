@@ -12,14 +12,10 @@ g = [1,2,3];
 step=.1;
 t_end = 3*10^3;
 
-% Make struct to pass to functions later
 vars.m = m; 
 vars.c = c;
 vars.b = b;
 vars.u_max = u_max;
 vars.u_min = u_min;
 vars.gamma = gamma;
-vars.v12 = v12;
-vars.v23 = v23;
-vars.g = g;
-vars.t_end = t_end;
+vars.
