@@ -92,5 +92,8 @@ plot(y_3_2(:, 2), t_3_2 .* P_2(end)/t(end)); hold off
 % legend("Exact model", "PWA", 'Interpreter', 'latex')
 saveas(gcf,'Pics/Plot_2.3_3.jpg')
 
+%% 2.5
+close all
 
+V=FEuler(t_end,u,dt);
 

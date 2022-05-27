@@ -23,3 +23,5 @@ vars.v12 = v12;
 vars.v23 = v23;
 vars.g = g;
 vars.t_end = t_end;
+
+dt = 0.15;
