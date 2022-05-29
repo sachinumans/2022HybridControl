@@ -5,6 +5,10 @@ function [P] = fricApprox(v, vars)
 P = zeros(size(v));
 
 boundaryIdx = find(v<vars.alpha, 1, 'last' ); % Get switching point between functions
+if all(v>vars.alpha) % or if every speed is above alpha
+    boundaryIdx = 0;
+end
+
 
 P(1:boundaryIdx) = vars.beta/vars.alpha .* v(1:boundaryIdx);
 

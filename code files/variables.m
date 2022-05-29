@@ -11,6 +11,7 @@ v23 = 30;
 g = [1,2,3];
 step=.1;
 t_end = 3*10^3;
+dt = 0.15;
 
 % Make struct to pass to functions later
 vars.m = m; 
@@ -23,5 +24,5 @@ vars.v12 = v12;
 vars.v23 = v23;
 vars.g = g;
 vars.t_end = t_end;
+vars.dt = dt;
 
-dt = 0.15;
