@@ -111,6 +111,7 @@ saveas(gcf,'Pics/Plot_2.3_3.jpg')
 end
 
 %% 2.5
+<<<<<<< Updated upstream
 T = 1:t_end;
 U = u(T*dt).*ones(size(T));
 
@@ -135,5 +136,10 @@ ylabel 'speed [m/s]'
 xlabel 'time [s]'
 legend("ODE45", "FE", 'Interpreter', 'latex')
 % saveas(gcf,'Pics/Plot_2.3_2.jpg')
+=======
+close all
+u_new = u(0:dt:t_end);
+V=FEuler(t_end,u,dt);
+>>>>>>> Stashed changes
 
 end
