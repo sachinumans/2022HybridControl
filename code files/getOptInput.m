@@ -9,7 +9,7 @@ E1 = sys.E1; E2 = sys.E2; E3 = sys.E3; E4 = sys.E4;
 g5 = sys.g5;
 
 %% Find equilibrium state related to the reference
-
+uref = B1\((eye(size(A)) - A) * ref.x - B2*ref.del - B3*ref.z);
 
 
 
