@@ -58,7 +58,7 @@ a_min = (b*u_min)/(1+gamma*g(3))/m-c/m*v_max^2;
 vars.v_max = v_max; % Make struct to pass to functions later
 %% 2.2
 
-[alpha, beta, err] = optApprox(vars);
+[alpha, beta] = optApprox(vars);
 vars.alpha = alpha; vars.beta = beta;
 
 Vsamp = linspace(0, v_max, 200);
