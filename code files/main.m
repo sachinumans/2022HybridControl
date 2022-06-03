@@ -114,7 +114,7 @@ end
 T = 1:t_end;
 U = u(T*dt).*ones(size(T));
 
-[t_5_1, y_5_1] = FEuler(x0, U, vars);
+[t_5_1, y_5_1] = FEuler(x0, U, vars,"PWA");
 [t_5_2, y_5_2] = ode45(@(t,y) modelPWA(t,y,u,vars, ""), [0 t_end*step], x0);
 
 if WorkingOn == "2.5" || WorkingOn=="all"
@@ -140,3 +140,5 @@ legend("ODE45", "FE", 'Interpreter', 'latex')
 % % V=FEuler(t_end,u,dt);
 
 end
+%% 2.6
+[t_6, y_6] = FEuler(x0, U, vars,"MLD");
