@@ -1,0 +1,18 @@
+SYSTEM pwa_sincos {
+ INTERFACE { 
+  PARAMETER { 
+   REAL A1 = [0.4, 0.6928; -0.6928, 0.4];
+   REAL A2 = [0.4, -0.6928; 0.6928, 0.4];
+   REAL B = [0; 1];
+  }
+  INPUT { REAL u [-1, 1]; }
+  STATE { REAL x(2) [-10, 10]; }
+  OUTPUT { REAL y(2); }
+ }
+ IMPLEMENTATION {
+  AUX { REAL z(2); }
+  DA { z = {IF x(1)<0 THEN  A1*x+B*u ELSE A2*x+B*u}; }
+  CONTINUOUS { x = z;}
+  OUTPUT { y = x; }
+ }
+}

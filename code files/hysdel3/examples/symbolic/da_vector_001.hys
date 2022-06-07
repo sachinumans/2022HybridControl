@@ -1,0 +1,30 @@
+SYSTEM ad_eq_001 {
+  INTERFACE {
+    PARAMETER { 
+      REAL x1u, x2u, x1d, x2d;
+      REAL H = [1, 0; 0, 1; -1, 0; 0, -1], K = [x1u; x2u; -x1d; -x2d];
+} 
+	STATE { 
+	  REAL x(2, 1) [-10*x1u, 10+x2u*x2d];
+	}
+	INPUT { 
+	  REAL u [-10,10];
+	}
+	OUTPUT{ 
+	  REAL y(2);
+	}
+  }
+  IMPLEMENTATION {
+    AUX { REAL z; }
+    DA { z = {IF (H*x <= K) THEN 0.5 ELSE 2.5}; }
+    CONTINUOUS { 
+      x = x + u + z;
+    }
+    OUTPUT { 
+      y = x;  
+    }
+    MUST {
+      x <= 15;
+    }
+  }
+}

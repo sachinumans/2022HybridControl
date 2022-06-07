@@ -1,0 +1,22 @@
+SYSTEM single_tank {
+    INTERFACE {
+        STATE { REAL x [0, 1]; }
+	INPUT { REAL inflow [0, 0.5]; }
+	OUTPUT { REAL outflow; }
+	PARAMETER { REAL k = 0.5; }
+    }
+    IMPLEMENTATION {
+        AUX {
+	   BOOL full;
+	}
+	AD {
+	   full = x >= 0.5;
+	}
+        CONTINUOUS {
+	   x = inflow - k*x + x;
+	}
+	OUTPUT {
+	   outflow = k*x;
+	}
+    }
+}

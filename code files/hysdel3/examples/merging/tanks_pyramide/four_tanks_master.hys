@@ -1,0 +1,18 @@
+SYSTEM four_tanks_master {
+    INTERFACE {
+        MODULE {
+	   two_tanks_master M1, M2;
+	}
+	INPUT { REAL inflow [0, 0.5]; }
+    OUTPUT { REAL outflow; }
+    }
+    IMPLEMENTATION {
+        LINEAR {
+	   M1.inflow = inflow;
+	   M2.inflow = M1.outflow;
+	}
+    OUTPUT {
+       outflow = M2.outflow;
+    }
+    }
+}

@@ -1,0 +1,10 @@
+SYSTEM ad_pass_005 {
+ INTERFACE {
+   INPUT {REAL u [-10, 10];}
+   STATE {REAL x;}
+ }
+ IMPLEMENTATION { 
+    AUX { BOOL d; }
+    AD { d = [-1, 0, 1]*x <= 2; }
+ }
+}

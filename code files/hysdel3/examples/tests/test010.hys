@@ -1,0 +1,46 @@
+SYSTEM test010 {
+/* bounds */
+/* usage: doShowMats('test010','') */
+
+/* ## (stdl2) now all C and D matrices are wrong > zeros(0,*) ## */
+
+
+INTERFACE {
+    INPUT {
+        REAL U(1) [-10, 10];
+        REAL U2(1);
+    }
+    STATE {
+        REAL X(1) [-5 , 5];
+        REAL X2(1);
+    }
+    OUTPUT {
+        REAL Y(1) [-2, 2];
+        REAL Y2(1);
+    }
+}
+IMPLEMENTATION {
+
+	AUX { 
+        REAL Z(1,2);
+        REAL Z2 [-1, 1];
+	}
+	LINEAR { 
+        Z=[X, U];
+    }
+	OUTPUT { 
+        Y=Z(2);
+        Y2=X;
+    }
+    CONTINUOUS {
+        X=U;
+        X2=X;
+    }
+    MUST {
+        U>=-11;
+        U<=9;
+        X>=-4;
+        X<=6;
+    }
+}
+}

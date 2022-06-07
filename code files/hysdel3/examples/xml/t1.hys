@@ -1,0 +1,41 @@
+
+SYSTEM T1{
+
+INTERFACE {
+
+  INPUT {
+    REAL u1;
+    REAL u2;
+  }
+  
+  STATE {
+    REAL x;   
+  }
+  
+  OUTPUT  {
+    REAL y;
+  }
+PARAMETER { REAL A=1, MLD_bigMbound = 1; }
+}
+
+
+IMPLEMENTATION {
+
+  AUX {
+    REAL a;
+  }
+
+  LINEAR {
+    a = u2;
+  }
+
+  CONTINUOUS {  
+    x  = x + a + u1;
+  }
+                   
+  OUTPUT {
+    y = x;
+  }
+  
+}
+}

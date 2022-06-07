@@ -1,0 +1,60 @@
+SYSTEM reaktormasik{
+	INTERFACE{
+	INPUT{REAL tcv[275,300];}
+	STATE{REAL ca[3.5,4.1];
+	      REAL t[310,330];
+	      REAL tc[306,320];		
+		}
+    OUTPUT{REAL y1;
+           REAL y2;	
+	       REAL y3;} 
+	PARAMETER{
+REAL cva, tv, q, knek, g; 
+/*
+	    REAL cva=4.22;
+        REAL tv=318;
+        REAL q=0.015; */
+        REAL qc=0.004;
+        REAL ro=1020;
+        REAL roc=998;
+        REAL cp=4.020;
+        REAL cpc=4.182;
+        REAL V=0.23;
+        REAL Vc=0.21;
+        REAL A=1.51;
+        REAL k=42.8;
+/*        REAL g=9.850; */
+        REAL rH=-8.4e4;
+/*        REAL knek=1.6e11;      */
+        REAL Ts=5;
+        REAL cas1=3.75;
+        REAL ts1=314;
+        REAL ts2=327;
+        	      	 }
+}
+
+	IMPLEMENTATION{
+        AUX{BOOL d;
+            REAL z;}
+        AD{d=t<=320;}
+        DA{z={IF d THEN knek*exp(-g/ts1)*cas1+knek*exp(-g/ts1)*(ca-cas1)+cas1*knek*exp(-g/ts1)*(g/(ts1^2))*(t-ts1) ELSE knek*exp(-g/ts2)*cas1+knek*exp(-g/ts2)*(ca-cas1)+cas1*knek*exp(-g/ts2)*(g/(ts2^2))*(t-ts2)};}
+		CONTINUOUS{
+		ca=q/V*Ts*cva-Ts*z-ca*(q/V*Ts-1);
+		t=q/V*tv+1/(ro*cp)*z*(-rH)*Ts+(k*A*Ts)/(V*ro*cp)*tc+(1-(q*ro*cp+k*A)/(V*ro*cp))*Ts*t;
+		tc=qc/Vc*Ts*tcv-(k*A)/(Vc*roc*cpc)*t*Ts+(1-(qc*roc*cpc+k*A)/(Vc*roc*cpc))*tc*Ts;
+						}
+	OUTPUT{
+		y1=ca;
+		y2=t;
+		y3=tc;
+		}
+	
+	}
+}
+		
+	      		 
+					
+			 	
+			 		 			
+		
+	  

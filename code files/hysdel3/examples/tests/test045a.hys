@@ -1,0 +1,32 @@
+SYSTEM test045a {
+/* usage: starttest045.m */
+
+/* no parameters */
+
+INTERFACE {
+  INPUT {
+    REAL U;
+  }
+  STATE {
+    REAL X;
+  }
+  OUTPUT {
+    REAL Y;
+  }
+}
+IMPLEMENTATION {
+  AUX {
+    REAL A;
+  }
+  LINEAR {
+    A=[31,32];
+  }
+  OUTPUT { 
+    Y=[1;2];
+    
+  }
+  CONTINUOUS {
+    X=[11;12];
+  }
+}
+}

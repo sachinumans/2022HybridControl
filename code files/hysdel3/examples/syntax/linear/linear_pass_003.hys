@@ -1,0 +1,10 @@
+SYSTEM linear_fail_005 {
+ INTERFACE {
+   STATE { BOOL x; }
+ }
+ IMPLEMENTATION { 
+/* RHS contains boolean variables */
+   AUX { REAL z; }
+    LINEAR { z = x; }
+  }
+}

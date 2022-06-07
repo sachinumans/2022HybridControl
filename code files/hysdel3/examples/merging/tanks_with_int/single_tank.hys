@@ -1,0 +1,16 @@
+SYSTEM single_tank {
+    INTERFACE {
+        STATE { REAL level [0, 1]; }
+	INPUT { REAL inflow [0, 0.5]; }
+	OUTPUT { REAL outflow; }
+	PARAMETER { REAL k = 0.5; }
+    }
+    IMPLEMENTATION {
+    CONTINUOUS {
+	   level = inflow - k*level + level;
+	}
+	OUTPUT {
+	   outflow = k*level;
+	}
+    }
+}

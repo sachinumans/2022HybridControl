@@ -1,0 +1,50 @@
+SYSTEM mpc_linear {
+/* MPC for the linear double integrator */
+  INTERFACE {
+    STATE {
+      REAL X(nx, 1) [-10, 10];   /* initial state */
+    }
+    INPUT {
+      REAL U(nu, N) [-1, 1];   /* N-1 dimensional matrix of inputs, i.e. [U_0 U_1 .. U_(N-1)] */
+    }
+    OUTPUT {
+      REAL y;   /* one system output - 1st element of the last predicted state */
+    }
+    PARAMETER {
+      REAL N = 5;               /* prediction horizon */
+      REAL nx = 2, nu = 1;      /* number of states, number of inputs */
+      /*REAL a1, a2, a3, a4, A=[a1, a2; a3, a4];*/
+      REAL A(2,2);
+      /*REAL A = [1, 1; 0, 1];*/    /* x(k+1) = A*x + B*u */
+      REAL B(2,1) = [1; 0.5];   /* x(k+1) = A*x + B*u */
+    }
+  }
+  IMPLEMENTATION {
+    AUX {
+      REAL z(nx, N+1);            /* nx-by-N dimensional matrix of predicted states */
+      INDEX i;                  /* index variable */
+    }
+    LINEAR {
+      z(1:nx, 1) = X(1:nx);     /* z(:,1) = X_0 */
+      
+      /* here we model the system evolution x(k+1) = A*x(k) + B*u(k) */
+      FOR (i = 1:N) {
+        z(1:nx, i+1) = A*z(1:nx, i) + B*U(1:nu, i);
+      }
+    }
+    CONTINUOUS {
+      /* next state update corresponds to last predicted state, i.e. to X_N */
+      X = z(1:nx, N+1);
+    }
+    OUTPUT {
+      /* system output is the 1st element of the last predicted state */
+      y = X(1);
+    }
+    MUST {
+      /* all elements of predicted states constrained between +10 and -10 */
+      z <= 10;
+      z >= -10;
+    }
+  }
+}
+

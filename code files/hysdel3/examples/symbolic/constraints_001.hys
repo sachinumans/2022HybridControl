@@ -1,0 +1,10 @@
+SYSTEM constraints_001 {
+INTERFACE {
+PARAMETER { REAL xu, xd, a; }
+STATE { REAL x [xd, xu]; }
+INPUT { REAL u; }
+}
+IMPLEMENTATION {
+CONTINUOUS { x = a*x + u; }
+}
+}

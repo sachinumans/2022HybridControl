@@ -1,0 +1,25 @@
+SYSTEM test {
+  INTERFACE {
+	STATE { 
+	  REAL x(2^4);
+	}
+    INPUT { REAL u; }
+	OUTPUT{ 
+	  REAL y;
+	}
+  }
+  IMPLEMENTATION {
+    AUX { INDEX i; }
+    CONTINUOUS { 
+      FOR (i = [1, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15]) {
+        x(i) = -1 + u;
+      }
+      FOR (i = 1:4) {
+        x(2^i) = i;
+      }
+    }
+    OUTPUT { 
+      y = x;  
+    }
+  }
+}

@@ -1,0 +1,9 @@
+SYSTEM da_pass_002 {
+ INTERFACE {
+   INPUT { BOOL u; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z; BOOL d; }
+   DA { z = {IF d THEN 2 ELSE 3}; }
+  }
+}

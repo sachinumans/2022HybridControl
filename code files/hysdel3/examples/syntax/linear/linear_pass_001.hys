@@ -1,0 +1,9 @@
+SYSTEM linear_pass_001 {
+ INTERFACE {
+   STATE { REAL x; }
+ }
+ IMPLEMENTATION { 
+    AUX { REAL z; } 
+    LINEAR { z = 2*x + x/2; }
+  }
+}

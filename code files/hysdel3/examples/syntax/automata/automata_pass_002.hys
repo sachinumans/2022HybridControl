@@ -1,0 +1,9 @@
+SYSTEM automata_pass_002 {
+ INTERFACE {
+   STATE { BOOL x1, x2, x3; }
+ }
+ IMPLEMENTATION { 
+   AUX { BOOL d; } 
+   AUTOMATA { x1 = x1 & x2 | x3 & d; }
+  }
+}

@@ -1,0 +1,39 @@
+SYSTEM test030 {
+/* symbolic parameters */
+/* usage: --> with starttest03x.m (change inside hysname) */
+
+/* ## (stdl2) D.aff is wrong  ## */
+
+INTERFACE {
+    INPUT {
+        REAL U(2); 
+    }
+    STATE {
+        REAL X(1);
+    }
+    OUTPUT {
+        REAL Y(2);
+        REAL Y2(1);
+    }
+    PARAMETER{
+        REAL a(1,2);
+        REAL b(3,1);
+        REAL c(2,3);
+    }
+}
+IMPLEMENTATION {
+
+	LINEAR {   
+    }
+
+	OUTPUT { 
+        Y=[a(1,2);c(2,1)]; 
+        Y2=a*c*b; 
+    }
+    CONTINUOUS {
+        X=[b(3,1), a(1,1)]*U;
+    }
+    MUST { 
+    }
+}
+}

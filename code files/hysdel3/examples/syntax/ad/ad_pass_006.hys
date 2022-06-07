@@ -1,0 +1,11 @@
+SYSTEM ad_pass_006 {
+ INTERFACE {
+   INPUT {REAL u [-10, 10];}
+   STATE {REAL x;}
+   PARAMETER { REAL H = [1, 0], K = 0; } 
+ }
+ IMPLEMENTATION { 
+    AUX { BOOL d; }
+    AD {d = H*x <= K; }
+ }
+}

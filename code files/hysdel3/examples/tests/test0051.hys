@@ -1,0 +1,36 @@
+SYSTEM test0051 {
+/* Matrix compose of paramvectors and states and inputs  */ 
+/* 51: rowvector instead of colvector as output
+-> Daux is wrong
+-> in j.eq there's missing 15,16! */
+
+INTERFACE {
+    INPUT {
+        REAL U(1);
+    }
+    STATE {
+        REAL X(1);
+    }
+    OUTPUT {
+        REAL Y(1,2);
+    }
+    PARAMETER {
+        REAL p1(1,2);
+    }
+}
+IMPLEMENTATION {
+
+	AUX { 
+        REAL Z(2,2);
+	}
+	LINEAR { 
+        Z=[p1; X ,U];
+    }
+	OUTPUT { 
+        Y=Z(2,1:2);
+    }
+    CONTINUOUS {
+        X=U;
+    }
+}
+}

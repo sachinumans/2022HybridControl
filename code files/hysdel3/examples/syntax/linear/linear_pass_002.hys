@@ -1,0 +1,10 @@
+SYSTEM linear_pass_002 {
+ INTERFACE {
+   STATE { REAL x; }
+   PARAMETER { REAL p; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z; }
+   LINEAR { z = p; }
+  }
+}

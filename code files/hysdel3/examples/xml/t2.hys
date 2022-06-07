@@ -1,0 +1,40 @@
+
+SYSTEM T1{
+
+INTERFACE {
+
+  INPUT {
+    REAL u1;
+    REAL u2;
+  }
+  
+  STATE {
+    REAL x2, x;
+  }
+  
+  OUTPUT  {
+    REAL y;
+  }
+}
+
+
+IMPLEMENTATION {
+
+  AUX {
+    REAL a;
+  }
+
+  LINEAR {
+    a = u2;
+  }
+
+  CONTINUOUS {  
+    x  = x + a + u1;
+  }
+                   
+  OUTPUT {
+    y = x;
+  }
+  
+}
+}

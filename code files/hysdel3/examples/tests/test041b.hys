@@ -1,0 +1,45 @@
+SYSTEM test041b {
+INTERFACE {
+
+    STATE {
+        REAL x(nx,1);
+    }
+
+    INPUT {
+        REAL u(nu,1);
+    }
+
+    OUTPUT {
+        REAL y(ny,1);
+        REAL TR;
+    }
+
+    PARAMETER {
+
+        /* COMP */
+        REAL nx;
+        REAL nu;
+        REAL ny; 
+        REAL BA(nx,nx);
+        REAL C(ny,nx);
+        /* SYMB */
+        REAL B(nx, nu);
+        REAL D(ny, nu);
+        /* FIX */
+        REAL xNo_Troom = 1;
+
+    }
+}
+IMPLEMENTATION {
+
+	OUTPUT { 
+        y = C*x + D*u;
+        TR=x(xNo_Troom);
+    }
+
+	CONTINUOUS { 
+        x = BA*x + B*u;
+    }
+
+} /* end implementation */
+} /* end system */

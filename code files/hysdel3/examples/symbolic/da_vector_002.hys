@@ -1,0 +1,29 @@
+SYSTEM ad_eq_001 {
+  INTERFACE {
+    PARAMETER { 
+      REAL a, b;
+} 
+	STATE { 
+	  REAL x(1, 1) [-10, 20];
+	}
+	INPUT { 
+	  REAL u [-5,6];
+	}
+	OUTPUT{ 
+	  REAL y;
+	}
+  }
+  IMPLEMENTATION {
+    AUX { REAL z; }
+    DA { z = {IF (a*x <= b) THEN 0.5 ELSE 2.5}; }
+    CONTINUOUS { 
+      x = x + u + z;
+    }
+    OUTPUT { 
+      y = x;  
+    }
+    MUST {
+      x <= 15;
+    }
+  }
+}

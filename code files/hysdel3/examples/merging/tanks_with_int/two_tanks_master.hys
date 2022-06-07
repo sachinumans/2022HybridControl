@@ -1,0 +1,19 @@
+SYSTEM two_tanks_master {
+    INTERFACE {
+        MODULE {
+	   single_tank T1, T2;
+	}
+	INPUT { REAL inflow [0, 0.5]; }
+    }
+    IMPLEMENTATION {
+    LINEAR {
+	   T1.inflow = inflow;
+	   T2.inflow = T1.outflow;
+	}
+
+    CONTINUOUS {
+       T1.level = T1.inflow - T1.k*(T1.level - T2.level) + T1.level;
+       T2.level = T1.k*(T1.level - T2.level) - T2.k*T2.level + T2.level;
+    }
+    }
+}

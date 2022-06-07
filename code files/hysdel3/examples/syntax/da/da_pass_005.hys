@@ -1,0 +1,10 @@
+SYSTEM da_pass_005 {
+ INTERFACE {
+   STATE { REAL x(2); }
+   PARAMETER { REAL H = [1, 2; 3, 4], K = [5; 6]; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z(2); }
+   DA { z = {IF H*x <= K THEN x ELSE -x}; }
+ }
+}

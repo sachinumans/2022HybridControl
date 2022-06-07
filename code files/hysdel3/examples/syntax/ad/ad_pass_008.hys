@@ -1,0 +1,9 @@
+SYSTEM ad_pass_008 {
+ INTERFACE {
+   STATE {REAL x;}
+ }
+ IMPLEMENTATION { 
+    AUX { BOOL d; }
+    AD { d = x==1; }
+ }
+}

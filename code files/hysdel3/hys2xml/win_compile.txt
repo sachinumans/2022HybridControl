@@ -1,0 +1,68 @@
+How to generate "hys2xml.exe" under Windows.
+----------------------------------------------
+
+1, Download and install cygwin:
+
+	http://www.cygwin.com/
+
+and make sure you also install with the package "make", "flex", and "gcc" utilities.
+
+2, Download "bison-1.875" from
+	
+	http://ftp.gnu.org/gnu/bison/bison-1.875.tar.gz
+
+and install from source:
+	- unpack and enter the directory
+	
+		tar xvzf bison-1.875.tar.gz
+		cd bison-1.875
+	
+	- install using "1.875" suffix
+
+		./configure --program-suffix=-1.875
+		make
+		make install
+
+3, Edit the "Makefile" and uncomment the following line:
+
+	YACC = BISON_PKGDATADIR=`pwd` `which bison-1.875`
+
+and rewrite 
+	
+	XFLAGS = -mno-cygwin
+
+4, You can now compile the source files by typing
+
+	make
+
+at the prompt. Optionally, the same result can be achieved by "make XFLAGS='-mno-cygwin'"
+command. DO NOT ADD '-mwindows' flag because the resulting executable will hang out when
+executed from MATLAB. Resulted executable "hys2xml.exe" has worked fine under both windows 32bit 
+64 bit versions. Moreover, "hys2xml.exe" generated under win32 has worked under win64 and vice-versa. 
+
+5, Start Matlab and enter the directory "hysde3/@xmltree/private" 
+
+On windows 32bit:
+mex sub_allchildren.c
+mex xml_cell_find.c
+mex xml_findstr.c
+
+On windows 64 bit:
+mex -largeArrayDims sub_allchildren.c
+mex -largeArrayDims xml_cell_find.c
+mex -largeArrayDims xml_findstr.c
+
+The flag "-largeArrayDims" will be default in future versions of Matlab.
+
+
+
+PROBLEMS:
+
+In case that something goes wrong, you may consider downloading the latest package of "yaxx"
+
+	http://sourceforge.net/projects/yaxx/
+
+Unpack the package and go to, e.g. "yaxx-0.12/yaxx/bison/data" directory. Here you find many
+skeleton files that begin with "yaxx-" prefix. You may try to replace the file "yaxx.c" in 
+"hysdel3/hys2xml" with some of the new skeleton file, depending on which version of bison you have.
+Do not forget to backup the old "yaxx.c" file, as not every skeleton file can be usable.

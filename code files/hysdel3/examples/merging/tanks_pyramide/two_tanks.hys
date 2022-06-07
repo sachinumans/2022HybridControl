@@ -1,0 +1,13 @@
+SYSTEM single_tank {
+    INTERFACE {
+        STATE { REAL h(2,1) [0, 1]; }
+	INPUT { REAL inflow [0, 0.5]; }
+	PARAMETER { REAL k = 0.5; }
+    }
+    IMPLEMENTATION {
+        CONTINUOUS {
+	   h(1) = inflow - k*h(1) + h(1);
+	   h(2) = k*h(1) - k*h(2) + h(2);
+	}
+    }
+}

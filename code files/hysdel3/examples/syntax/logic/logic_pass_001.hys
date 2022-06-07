@@ -1,0 +1,9 @@
+SYSTEM logic_pass_001 {
+ INTERFACE {
+   STATE { BOOL x; } 
+ }
+ IMPLEMENTATION { 
+   AUX { BOOL d1, d2; }
+   LOGIC { d1 = x & d2; }
+  }
+}

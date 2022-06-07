@@ -1,0 +1,8 @@
+SYSTEM must_pass_001 {
+ INTERFACE {
+   STATE { REAL x1; }
+ }
+ IMPLEMENTATION { 
+   MUST { x1 <= 0; }
+ }
+}

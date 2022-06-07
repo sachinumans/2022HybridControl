@@ -1,0 +1,10 @@
+SYSTEM logic_pass_002 {
+ INTERFACE {
+   INPUT { BOOL u; }
+   STATE { REAL x; } 
+ }
+ IMPLEMENTATION { 
+   AUX { BOOL d; }
+   LOGIC { d = u; }
+ }
+}

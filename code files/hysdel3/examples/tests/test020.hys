@@ -1,0 +1,38 @@
+SYSTEM test020 {
+/* matrix multiplication */
+/* usage: doShowMats('test020','') */
+
+/* ## (stdl2) now all C and D matrices are wrong > zeros(0,*) ## */
+
+INTERFACE {
+    INPUT {
+        REAL U(1) ;
+    }
+    STATE {
+        REAL X(1);
+    }
+    OUTPUT {
+        REAL Y(2);
+        REAL Y2(2);
+    }
+    PARAMETER {
+        REAL A=[1, 2; 3, 4];
+    }
+}
+IMPLEMENTATION {
+
+	AUX { 
+        REAL Z(2,1);
+	}
+	LINEAR { 
+        Z=A*[X;U];
+    }
+	OUTPUT { 
+        Y=Z;
+        Y2=A*[X;U];
+    }
+    CONTINUOUS {
+        X=Z(1);
+    }
+}
+}

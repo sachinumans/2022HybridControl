@@ -1,0 +1,11 @@
+SYSTEM da_pass_007 {
+ INTERFACE {
+   STATE { REAL x(3); }
+   PARAMETER { REAL N = 5, i = [1,2,3]; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z(3,1);
+         BOOL d(3,1);} 
+   DA { z(i) = {IF d(i) THEN 1 ELSE -x(i)}; }
+ }
+}

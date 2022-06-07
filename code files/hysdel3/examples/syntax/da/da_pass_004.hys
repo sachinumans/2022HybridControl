@@ -1,0 +1,9 @@
+SYSTEM da_pass_004 {
+ INTERFACE {
+   STATE { REAL x; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z; }
+   DA { z = {IF x >= 0 THEN 1 ELSE 2}; }
+ }
+}

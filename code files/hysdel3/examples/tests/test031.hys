@@ -1,0 +1,52 @@
+SYSTEM test031 {
+/* symbolic parameters and addition of scalar to vector*/
+
+INTERFACE {
+    INPUT {
+        REAL U(2); 
+    }
+    STATE {
+        REAL X(1);
+    }
+    OUTPUT {
+        REAL Y(2);
+        REAL Y2(1);
+    }
+   PARAMETER{
+        REAL d;
+    } 
+}
+IMPLEMENTATION {
+
+	LINEAR {   
+    }
+
+	OUTPUT { 
+        /* three cases, uncomment the one to consider */
+
+        /*
+        Y=[1;2]+X;
+        Y2=6;  
+*/
+        /* ? this only works if we delete the parametersection
+            (else the outputmatrices are wrong (y2-line gets lost, but ny still 3, 
+            therefore starttest* will not work; set there breakpoint, or look at matrices by hand */
+/*        
+Y=[1;2]+X;
+        Y2=6 +X; */
+        /* this one is always ok */
+
+        
+        Y=[1;2];
+        Y2=6 +X; 
+        /* same as ? , but now (y-line gets lost*/
+        
+
+    }
+    CONTINUOUS {
+        X=U(2);
+    }
+    MUST { 
+    }
+}
+}

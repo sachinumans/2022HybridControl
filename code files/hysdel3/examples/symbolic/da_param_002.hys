@@ -1,0 +1,13 @@
+SYSTEM da_param_002 {
+INTERFACE { 
+STATE { REAL x [-10, 10]; }
+INPUT { REAL u [2, 3]; }
+PARAMETER { REAL a; }
+}
+IMPLEMENTATION {
+AUX { REAL z; BOOL d; }
+AD { d = a*x >= 2.5; }
+DA { z = { IF d THEN x+u ELSE x/4-3*u }; }
+CONTINUOUS { x = z; } 
+}
+}

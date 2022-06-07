@@ -1,0 +1,34 @@
+SYSTEM test045a {
+/* usage: starttest045.m */
+
+/* with symbolic parameters (NOT assigned during compilation) */
+
+INTERFACE {
+  INPUT {
+    REAL U;
+  }
+  STATE {
+    REAL X;
+  }
+  OUTPUT {
+    REAL Y;
+  }
+  PARAMETER {
+    REAL n;
+  }
+}
+IMPLEMENTATION {
+  AUX {
+    REAL A;
+  }
+  LINEAR {
+    A=[31;32];
+  }
+  OUTPUT { 
+    Y=[1;2]; 
+  }
+  CONTINUOUS {
+    X=[11;12];
+  }
+}
+}

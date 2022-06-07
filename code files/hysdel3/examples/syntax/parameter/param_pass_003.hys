@@ -1,0 +1,10 @@
+SYSTEM param_pass_003 {
+ INTERFACE {
+   PARAMETER { REAL p = 1; }
+   INPUT { REAL u [-1, 1]; }
+   OUTPUT {REAL y; }
+ }
+ IMPLEMENTATION { 
+   OUTPUT {y = p*u; }
+  }
+}

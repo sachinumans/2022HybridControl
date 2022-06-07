@@ -1,0 +1,10 @@
+SYSTEM constraints_002 {
+INTERFACE {
+PARAMETER { REAL xu, xd, a, XD=xu*sin(xd+cos(exp(a))); }
+STATE { REAL x [XD, -(-10*xu+0.5*xd)]; }
+INPUT { REAL u; }
+}
+IMPLEMENTATION {
+CONTINUOUS { x = cos(sin(exp(xu*(a+xd))+xu)-xd/4*xu)*x + u; }
+}
+}

@@ -1,0 +1,10 @@
+SYSTEM da_pass_006 {
+ INTERFACE {
+   STATE { REAL x(2); }
+   PARAMETER { REAL a = 5, b = 0.5; }
+ }
+ IMPLEMENTATION { 
+   AUX { REAL z(2); }
+   DA { z = {IF [1, 0]*x <= 0 THEN a ELSE b*x}; }
+ }
+}

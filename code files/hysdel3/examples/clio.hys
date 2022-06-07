@@ -1,0 +1,131 @@
+SYSTEM car {
+
+ INTERFACE {
+   STATE {
+     REAL position [-1000, 1000];
+     REAL speed [-50*1000/3600, 220*1000/3600];
+   }
+   INPUT {
+    REAL torque [-300, 300];
+    REAL F_brake [0, 9000];
+    BOOL gear1, gear2, gear3, gear4, gear5, gearR;
+   }
+   PARAMETER {
+    REAL mass = 1020;
+    REAL beta_friction = 25;
+    REAL Rgear1 = 3.7271;
+    REAL Rgear2 = 2.048;
+    REAL Rgear3 = 1.321;
+    REAL Rgear4 = 0.971;
+    REAL Rgear5 = 0.756;
+    REAL RgearR = -3.545;
+
+    REAL wheel_rim = 14;
+    REAL tire_width = 175;
+    REAL tire_height_perc = 65;
+    REAL R_final =3.294;
+    REAL loss = 0.925;
+    REAL pi = 3.1415;
+    REAL inch = 2.54;
+    
+    REAL wheel_radius = (wheel_rim/2*inch+(tire_width/10)*
+                        (tire_height_perc/100))/100;
+
+    REAL speed_factor = loss/R_final*wheel_radius;
+    REAL max_brake = 8.53;
+    REAL max_brake_force = mass*max_brake;
+    REAL wemin = -100*2*pi/60;
+    REAL wemax = 6000*2*pi/60;
+    REAL Ts = 0.5;
+    
+    REAL aPWL1 = 0;
+    REAL aPWL2 = 58.107;
+    REAL aPWL3 = 151.7613;
+    REAL aPWL4 = 192.8526;
+    REAL aPWL5 = 259.9484;
+
+    REAL bPWL1 = 1.3281;
+    REAL bPWL2 = 0.6344;
+    REAL bPWL3 = 0.0755;
+    REAL bPWL4 = -0.088;
+    REAL bPWL5 = -0.2883;
+
+    REAL wPWL1 = 83.7733;
+    REAL wPWL2 = 167.5467;
+    REAL wPWL3 = 251.32;
+    REAL wPWL4 = 335.0933;
+
+    REAL alpha1 = 10;
+    REAL beta1 = 0.3;
+   }
+ } 
+
+ IMPLEMENTATION {
+   AUX {
+    REAL Fe1, Fe2, Fe3, Fe4, Fe5, FeR;
+    REAL w1, w2, w3, w4, w5, wR;
+    BOOL dPWL1, dPWL2, dPWL3, dPWL4;
+    REAL DCe1, DCe2, DCe3, DCe4;
+   }
+   AD {
+    dPWL1 = wPWL1 - (w1+w2+w3+w4+w5+wR) <= 0;
+    dPWL2 = wPWL2 - (w1+w2+w3+w4+w5+wR) <= 0;
+    dPWL3 = wPWL3 - (w1+w2+w3+w4+w5+wR) <= 0;
+    dPWL4 = wPWL4 - (w1+w2+w3+w4+w5+wR) <= 0;
+   }
+   DA {
+    Fe1 = {IF gear1 THEN torque/speed_factor*Rgear1};
+    Fe2 = {IF gear2 THEN torque/speed_factor*Rgear2};
+    Fe3 = {IF gear3 THEN torque/speed_factor*Rgear3};
+    Fe4 = {IF gear4 THEN torque/speed_factor*Rgear4};
+    Fe5 = {IF gear5 THEN torque/speed_factor*Rgear5};
+    FeR = {IF gearR THEN torque/speed_factor*RgearR};
+
+    w1 = {IF gear1 THEN speed/speed_factor*Rgear1};
+    w2 = {IF gear2 THEN speed/speed_factor*Rgear2};
+    w3 = {IF gear3 THEN speed/speed_factor*Rgear3};
+    w4 = {IF gear4 THEN speed/speed_factor*Rgear4};
+    w5 = {IF gear5 THEN speed/speed_factor*Rgear5};
+    wR = {IF gearR THEN speed/speed_factor*RgearR};
+
+    DCe1 = {IF dPWL1 THEN (aPWL2-aPWL1)+(bPWL2-bPWL1)*(w1+w2+w3+w4+w5+wR)};
+    DCe2 = {IF dPWL2 THEN (aPWL3-aPWL2)+(bPWL3-bPWL2)*(w1+w2+w3+w4+w5+wR)};
+    DCe3 = {IF dPWL3 THEN (aPWL4-aPWL3)+(bPWL4-bPWL3)*(w1+w2+w3+w4+w5+wR)};
+    DCe4 = {IF dPWL4 THEN (aPWL5-aPWL4)+(bPWL5-bPWL4)*(w1+w2+w3+w4+w5+wR)};
+   }
+   CONTINUOUS {
+    position = position+Ts*speed;
+    speed = speed+Ts/mass*(Fe1+Fe2+Fe3+Fe4+Fe5+FeR-F_brake-beta_friction*speed);
+   }
+   MUST {
+    -w1 <= -wemin;
+     w1 <= wemax;
+    -w2 <= -wemin;
+     w2 <= wemax;
+    -w3 <= -wemin;
+     w3 <= wemax;
+    -w4 <= -wemin;
+     w4 <= wemax;
+    -w5 <= -wemin;
+     w5 <= wemax;
+    -wR <= -wemin;
+     wR <= wemax;    
+
+    -F_brake <= 0;
+     F_brake <= max_brake_force;
+
+    -torque-(alpha1+beta1*(w1+w2+w3+w4+w5+wR)) <= 0;
+    torque-(aPWL1+bPWL1*(w1+w2+w3+w4+w5+wR)+DCe1+DCe2+DCe3+DCe4)-1 <= 0;
+
+    -((REAL gear1)+(REAL gear2)+(REAL gear3)+(REAL gear4)+(REAL gear5)+(REAL gearR)) <= -0.9999;
+    (REAL gear1)+(REAL gear2)+(REAL gear3)+(REAL gear4)+(REAL gear5)+(REAL gearR) <= 1.0001;
+
+    dPWL4 -> dPWL3;
+    dPWL4 -> dPWL2;
+    dPWL4 -> dPWL1;
+    dPWL3 -> dPWL2;
+    dPWL3 -> dPWL1;
+    dPWL2 -> dPWL1;
+  }
+ }
+}

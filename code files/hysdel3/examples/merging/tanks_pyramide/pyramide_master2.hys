@@ -1,0 +1,20 @@
+SYSTEM pyramide_master {
+    INTERFACE {
+        MODULE {
+	   two_tanks_master M3, M4;
+       single_tank T1, T2, T3, T4;
+       four_tanks_master M1_2;
+	}
+	INPUT { REAL inflow [0, 0.5]; }
+    }
+    IMPLEMENTATION {
+        LINEAR {
+	   T1.inflow = inflow;
+       T2.inflow = T1.outflow;
+       M1_2.inflow = T1.outflow;
+       T3.inflow = M1_2.M1.outflow;
+       M3.inflow = T3.outflow;
+       T4.inflow = T3.outflow;
+       M4.inflow = M3.outflow;
+	} }
+}

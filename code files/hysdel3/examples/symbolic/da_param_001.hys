@@ -1,0 +1,14 @@
+SYSTEM da_param_001 {
+INTERFACE { 
+STATE { REAL x [-10, 10]; }
+INPUT { REAL u [2, 3]; }
+OUTPUT { REAL y; }
+PARAMETER { REAL h, k, A1, A2, B1, B2; }
+}
+IMPLEMENTATION {
+AUX { REAL z; }
+DA { z = { IF (h*x >= 2.5*k) THEN A1*x+B1*u ELSE A2*x+B2*u }; }
+CONTINUOUS { x = z; } 
+OUTPUT { y = x; }
+}
+}

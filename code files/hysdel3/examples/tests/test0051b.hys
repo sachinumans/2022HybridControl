@@ -1,0 +1,40 @@
+SYSTEM test0051b {
+/* Matrix compose of paramvectors and states and inputs  */ 
+/* 51: rowvector instead of colvector as output
+-> Daux is wrong
+-> in j.eq there's missing 15,16! */
+/* 51b: use for Z now only numbers 
+-> j.eq still wrong, (but boundaries in wuwl correct)
+-> Daux still wrong  */
+
+
+INTERFACE {
+    INPUT {
+        REAL U(1);
+    }
+    STATE {
+        REAL X(1);
+    }
+    OUTPUT {
+        REAL Y(1,2);
+    }
+    PARAMETER {
+        REAL p1(1,2);
+    }
+}
+IMPLEMENTATION {
+
+	AUX { 
+        REAL Z(2,2);
+	}
+	LINEAR { 
+        Z=[711, 712; 721, 722];
+    }
+	OUTPUT { 
+        Y=Z(2,1:2);
+    }
+    CONTINUOUS {
+        X=U;
+    }
+}
+}

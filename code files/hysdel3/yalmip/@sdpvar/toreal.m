@@ -1,0 +1,34 @@
+function x = toreal(x)
+%TOREAL Removes the constraint on variables to be binary (0/1)
+
+%
+%   F = BINARY(x) is used to a posteriori constrain 
+%   variables to be binary, in contrast to BINVAR 
+%   that declares variables as binary a priori.
+%
+%   NOTE
+%    The binary constraint is imposed on the involved
+%    decision variables, not on the actual SDPVAR object.
+%
+%   INPUT
+%    x : SDPVAR object
+%
+%   OUTPUT
+%    F : SET object
+%
+%   EXAMPLE
+%    F = set(binary(x));             % Full verbose notation
+%    F = binary(x);                  % Short notation
+%    F = binary(x*pi)                % Equivalent to code above
+%    solvesdp(G+set(binary(x)),obj)  % Add binary constraint on the fly
+%
+%   See also INTEGER, SET, SDPVAR, INTVAR, BINVAR
+
+% Author Johan L?fberg
+% $Id: binary.m,v 1.3 2004-07-06 14:08:11 johanl Exp $
+
+bins = yalmip('binvariables');
+bins = setdiff(bins, getvariables(x));
+yalmip('setbinvariables', bins);
+x.typeflag = 0;
+x = lmi(x);

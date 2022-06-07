@@ -1,0 +1,31 @@
+SYSTEM test040c {
+/* parameters (some needed for compilation, others remain symbolic)*/
+/* usage: starttest040.m */
+
+INTERFACE {
+  INPUT {
+    REAL U(nu); 
+  }
+  STATE {
+    REAL X(2);
+  }
+  OUTPUT {
+    REAL Y(1);
+  }
+  PARAMETER{
+    REAL nu; /* needed for compilation */
+    REAL c; /* should remain symbolic */
+  }
+}
+IMPLEMENTATION {
+
+  OUTPUT { 
+    Y=U(nu);
+  }
+  CONTINUOUS {
+    /* the same as test040a, but written inanother way -> compile error */
+    X=[c;77];
+  }
+
+}
+}

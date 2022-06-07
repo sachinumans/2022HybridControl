@@ -1,0 +1,8 @@
+SYSTEM da_pass_001 {
+ INTERFACE {
+  STATE { BOOL d; }
+ }
+ IMPLEMENTATION { 
+    AUX { REAL z; } DA { z = {IF d THEN 1.1}; }
+  }
+}

@@ -1,0 +1,31 @@
+SYSTEM test040b {
+/* parameters (some needed for compilation, others remain symbolic)*/
+/* usage: starttest040.m */
+
+INTERFACE {
+  INPUT {
+    REAL U(nu); 
+  }
+  STATE {
+    REAL X(2);
+  }
+  OUTPUT {
+    REAL Y(1);
+  }
+  PARAMETER{
+    REAL nu; /* needed for compilation */
+    REAL c; /* should remain symbolic */
+  }
+}
+IMPLEMENTATION {
+
+  OUTPUT { 
+    Y=U(nu);
+  }
+  CONTINUOUS {
+  /* ## (in comparison to test040a) interchanged the 1 and the 2, but matrices remain the same! -> wrong*/
+    X(2)=c;
+    X(1)=77;
+  }
+}
+}

@@ -1,0 +1,43 @@
+SYSTEM test043b {
+/* usage: starttest043.m */
+
+/* fixed parameter */
+
+INTERFACE {
+  INPUT {
+    REAL U(1); 
+  }
+  STATE {
+    REAL XX;
+    REAL X(2);
+  }
+  OUTPUT {
+    REAL YY;
+    REAL Y(2);
+  }
+  PARAMETER {
+    REAL n=3;
+  }
+}
+IMPLEMENTATION {
+  AUX {
+    REAL AA;
+    REAL A(2);
+  }
+  LINEAR {
+    A(2)=23;
+    A(1)=22;
+    AA=21;
+  }
+  OUTPUT { 
+    Y(2)=13 +X(2);
+    Y(1)=12 +X(1);
+    YY=  11 +XX;
+  }
+  CONTINUOUS {
+    X(2)=3 +X(2);
+    X(1)=2 +X(1);
+    XX=  1 +XX;
+  }
+}
+}

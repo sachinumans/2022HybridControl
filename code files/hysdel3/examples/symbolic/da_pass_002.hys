@@ -1,0 +1,23 @@
+SYSTEM test_ltiABC {
+
+/* test file for symbolic parameters */
+
+ INTERFACE {
+  INPUT { REAL u [-11, 12];}
+  STATE { REAL x(2) [-21, 22; -31, -32]; }
+  OUTPUT { REAL y; }
+  PARAMETER { REAL A [-1, 1],B,C, D = [A*A, sin(A+cos(B^2)); A*C, B*C]; }
+ }
+
+ IMPLEMENTATION {
+  AUX { BOOL d; }
+  AD { d = B*x(1) <= A; }
+  CONTINUOUS { x = D*x; }
+  OUTPUT { y = C*x + C^3*exp(A)*u + A*B - sin(B)*x - C; }
+
+  MUST { x(1) + u <= B; 
+A*C*B <= sum(x) + u; }
+
+ }
+
+}

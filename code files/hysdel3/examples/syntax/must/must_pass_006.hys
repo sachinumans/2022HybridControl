@@ -1,0 +1,9 @@
+SYSTEM must_pass_006 {
+ INTERFACE {
+   STATE { REAL x1; }
+ }
+ IMPLEMENTATION { 
+   AUX { BOOL d1, d2; } 
+   MUST { (x1 <= 0) -> d1; }
+ }
+}

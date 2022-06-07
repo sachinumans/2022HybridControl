@@ -1,0 +1,26 @@
+SYSTEM single_tank {
+    INTERFACE {
+        STATE { REAL h(2,1) [0, 1]; }
+	INPUT { REAL inflow [0, 0.5]; }
+	OUTPUT { BOOL full_out(2); }
+	PARAMETER { REAL k = 0.5; }
+    }
+    IMPLEMENTATION {
+        AUX {
+	   BOOL full(2);
+	   INDEX i;
+	}
+	AD {
+	   FOR (i = 1:2) {
+	       full(i) = h(i) >= 0.5;
+	   }
+	}
+        CONTINUOUS {
+	   h(1) = inflow - k*h(1) + h(1);
+	   h(2) = k*h(1) - k*h(2) + h(2);
+	}
+	OUTPUT {
+	   full_out = full;
+	}
+    }
+}
