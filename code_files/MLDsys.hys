@@ -1,0 +1,62 @@
+SYSTEM ACCcar {
+  INTERFACE {
+  /* declaration of variables, subsystems */
+    PARAMETER {
+      REAL u_min;
+      REAL u_max;
+      REAL v_max;
+      REAL alpha;
+      REAL beta;
+      REAL gamma;
+      REAL c;
+      REAL k;
+      REAL q;
+      REAL r;
+    }
+    INPUT {
+      REAL throttle [u_min, u_max];
+    }
+
+    STATE {
+      REAL speed [0, v_max];
+    }
+
+    OUTPUT {
+      REAL meas;
+    }
+  }
+
+  IMPLEMENTATION {
+  /* relations between declared variables */
+    AUX {
+    REAL z(3);
+    BOOL delta(3);
+    }
+    CONTINUOUS {
+    }
+    AUTOMATA {
+    /* state update equation for variables of type BOOL */
+    }
+    LINEAR {
+    /* linear relations between variables of type REAL */
+    }
+    LOGIC {
+    /* logical relations between variables of type BOOL */
+    }
+    AD {
+    /* analog-digital block, specifying relations between
+    variables of type REAL to BOOL */
+    }
+    DA {
+    /* digital-analog block, specifying relations between
+    variables of type BOOL to REAL */
+    }
+    MUST {
+    /* specification of input/state/output constraints */
+    }
+    OUTPUT {
+    /* selection of output variables which can be of type
+    REAL or BOOL) */
+    }
+  }
+}

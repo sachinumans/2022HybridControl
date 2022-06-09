@@ -2,7 +2,7 @@ clc
 close all, clear all
 variables
 fig = 1;
-WorkingOn = "2.5";
+WorkingOn = "2.8";
 %% Dynamics test
 % x=0;
 % v=0;
@@ -140,5 +140,84 @@ legend("ODE45", "FE", 'Interpreter', 'latex')
 % % V=FEuler(t_end,u,dt);
 
 end
-%% 2.6
-[t_6, y_6] = FEuler(x0, U, vars,"MLD");
+%% 2.7
+% [t_6, y_6] = FEuler(x0, U, vars,"MLD");
+
+x0 = 52;
+Np = 10; % Prediction horizon
+Nc = 7; % Control horizon
+lambda = 0.3;
+
+sys = MLD(vars);
+sys.dt = dt;
+sys.a_comf = 2.5;
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+vRef = 20 *ones(Np, 1);
+[C, M, b2] = costFunc(sys, vRef, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+if WorkingOn == "2.7" || WorkingOn=="all"
+    [u_2_7, ~] = getOptInput(x0, vRef, sys, K, L, C, Np, Neq, Nleq, "plot"); fig = fig+1;
+end
+
+%% 2.8
+A = sys.A;
+B1 = sys.B1; B2 = sys.B2; B3 = sys.B3; 
+E1 = sys.E1; E2 = sys.E2; E3 = sys.E3; E4 = sys.E4; 
+g5 = sys.g5;
+
+H = [A B1 B2 B3];
+nx = size(A, 1);
+nu = size(B1, 2);
+n = size(H, 2);
+
+T = 50;
+x0 = 25;
+vRef = 15 *ones(T+Np, 1);
+
+Np = 10; % Prediction horizon
+Nc = 7; % Control horizon
+lambda = 0.3;
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_8 = zeros(T, nu);
+x_2_8 = zeros(T, nx);
+for k = 1:T
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_8(k, :), x_2_8(k, :)] = getOptInput(x0, vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+
+x0 = x_2_8(k, :);
+end
+
+if WorkingOn == "2.8" || WorkingOn=="all"
+    figure(fig); fig = fig+1;
+    subplot(2, 1, 1)
+    X = [ones(1, nx) zeros(1, n*Np+2*Np-nx)]; % states
+    plot(x_2_8);
+    title("Velocities")
+    
+    subplot(2, 1, 2)
+    plot(u_2_8);
+    title("Input")
+end
+
+%% 2.8
+
+
+
+

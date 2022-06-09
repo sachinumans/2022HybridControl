@@ -27,7 +27,7 @@ idx = find(solAlph>0 & solAlph<vmax & solBet>0 & solBet<(c*vmax^2));
 alpha = solAlph(idx); % Grab valid values
 beta = solBet(idx);
 
-if 1==1
+if 1==0
     fA = matlabFunction(A); % Make a function of alpha, beta
     figure()
     fsurf(fA, [0 vmax 0 c*vmax^2])

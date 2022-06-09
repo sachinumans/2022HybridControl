@@ -4,10 +4,10 @@ ut = u(t);
 
 if mode == "gearlock"
     gear = 1;
-elseif y(2)<vars.v12
+elseif y(2)<=vars.v12
 %     warning("Here I am in gear 1")
     gear = 1;
-elseif y(2)<vars.v23
+elseif y(2)<=vars.v23
 %     warning("Here I am in gear 2")
     gear=2;
 else
