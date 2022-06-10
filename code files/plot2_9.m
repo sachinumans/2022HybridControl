@@ -50,6 +50,7 @@ figure(fig); fig = fig+1; hold on
 plot(t(2:end), a)
 plot(t(2:end), aRef, "--")
 yline(aComf, "k")
+yline(-aComf, "k")
 xlabel("Time")
 ylabel("Acceleration")
 title("Acceleration evolution, Np = " + Np + ", Nc = " + Nc)
