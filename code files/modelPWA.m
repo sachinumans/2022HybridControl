@@ -1,6 +1,6 @@
 function [dx] = modelPWA(t, y, u, vars, mode)
 %MODELEXACT The exact differential equations
-if class(u) == 'function_handle'
+if convertCharsToStrings(class(u)) == "function_handle"
     ut = u(t);
 end
 

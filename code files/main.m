@@ -1,12 +1,14 @@
 clc; close all; clear;
 variables % Retrieve system parameters
 fig = 1; % Figure number token
-WorkingOn = "2.9"; % Token to prevent always plotting everything
+WorkingOn = "all"; % Token to prevent always plotting everything
 %% Dynamics test
 u = @(t) u_max + heaviside(t-100)*(-u_max + u_min) + heaviside(t-120)*(-u_min + u_max)...
     + heaviside(t-170)*(-u_max); % Input function
-[t_0_1,y_0_1] = ode45(@(t,y) modelExact(t,y,u,vars, ""), [0 t_end*step], [0 0]); % Integration
+[t_0_1,y_0_1] = ode45(@(t,y) modelExact(t,y,u,vars, "")...
+    , [0 t_end*step], [0 0]); % Integration of the exact model
 
+% Plotting
 if WorkingOn == "dyntest" || WorkingOn=="all"
 figure(fig); fig = fig+1;
 plot(t_0_1,y_0_1(:,2))
@@ -15,28 +17,29 @@ xlabel 'time [s]'
 ylabel 'speed [m/s]'
 saveas(gcf,'Pics/Plot_2.1_1.jpg')
 
-% figure(fig); fig = fig+1;
-% plot(t_0_1, u(t_0_1))
-% title 'ACC Car dynamics simulation input'
-% xlabel 'time [s]'
-% ylabel 'speed [m/s]'
-% saveas(gcf,'Pics/Plot_2.1_2.jpg')
+figure(fig); fig = fig+1;
+plot(t_0_1, u(t_0_1))
+title 'ACC Car dynamics simulation input'
+xlabel 'time [s]'
+ylabel 'speed [m/s]'
+saveas(gcf,'Pics/Plot_2.1_2.jpg')
 end
 
 %% 2.1
-v_max = ((b*u_max)/(c*(1+gamma*g(3))))^.5;
-a_max = (b*u_max)/(1+gamma*g(1))/m;
-a_min = (b*u_min)/(1+gamma*g(3))/m-c/m*v_max^2;
+v_max = ((b*u_max)/(c*(1+gamma*g(3))))^.5; % Maximum speed
+a_max = (b*u_max)/(1+gamma*g(1))/m; % Maximum acceleration
+a_min = (b*u_min)/(1+gamma*g(3))/m-c/m*v_max^2; % Minimum acceleration
 
 vars.v_max = v_max; % Make struct to pass to functions later
 %% 2.2
 
-[alpha, beta] = optApprox(vars);
+[alpha, beta] = optApprox(vars); % Determine optimal values for alpha and beta
 vars.alpha = alpha; vars.beta = beta;
 
-Vsamp = linspace(0, v_max, 200);
-P_2 = fricApprox(Vsamp, vars);
+Vsamp = linspace(0, v_max, 200); % Speed samples
+P_2 = fricApprox(Vsamp, vars); % Friction approximation
 
+% Plotting
 if WorkingOn == "2.2" || WorkingOn=="all"
 figure(fig); fig = fig+1;
 plot(Vsamp, P_2); hold on
@@ -48,57 +51,37 @@ saveas(gcf,'Pics/Plot_2.2.jpg')
 end
 
 %% 2.3
-x0 = [0;0];
-u = @(t) u_max/5 + u_max/2*sin(t/2/pi);
-[t_3_1,y_3_1] = ode45(@(t,y) modelExact(t,y,u,vars, "gearlock"), [0 t_end*step], x0);
-[t_3_2,y_3_2] = ode45(@(t,y) modelPWA(t,y,u,vars, "gearlock"), [0 t_end*step], x0);
+x0 = [0;0]; % Initial state
+u = @(t) u_max/5 + u_max/2*sin(t/2/pi); % Input sinusoid
+[t_3_1,y_3_1] = ode45(@(t,y) modelExact(t,y,u,vars, "gearlock")...
+    , [0 t_end*step], x0); % Integrate exact model
+[t_3_2,y_3_2] = ode45(@(t,y) modelPWA(t,y,u,vars, "gearlock")...
+    , [0 t_end*step], x0); % Integrate PWA model
 
+% Plotting
 if WorkingOn == "2.3" || WorkingOn=="all"
-figure(fig); fig = fig+1;
-plot(t_3_1,u(t_3_1));
-title 'PWA approximation comparison input'
-ylabel 'input'
-xlabel 'time [s]'
-% legend("Exact model", "PWA", 'Interpreter', 'latex')
-saveas(gcf,'Pics/Plot_2.3_1.jpg')
-
-figure(fig); fig = fig+1;
-plot(t_3_1,y_3_1(:, 2)); hold on
-plot(t_3_2,y_3_2(:, 2)); hold off
-title 'PWA approximation comparison'
-ylabel 'speed [m/s]'
-xlabel 'time [s]'
-legend("Exact model", "PWA", 'Interpreter', 'latex')
-saveas(gcf,'Pics/Plot_2.3_2.jpg')
-
-figure(fig); fig = fig+1;
-plot(Vsamp, P_2); hold on
-plot(Vsamp, c*Vsamp.^2);
-plot(y_3_1(:, 2), t_3_1 .* P_2(end)/t_3_1(end));
-plot(y_3_2(:, 2), t_3_2 .* P_2(end)/t_3_2(end)); hold off
-% title 'PWA approximation comparison'
-% ylabel 'speed [m/s]'
-% xlabel 'time [s]'
-% legend("Exact model", "PWA", 'Interpreter', 'latex')
-saveas(gcf,'Pics/Plot_2.3_3.jpg')
+    fig = plot2_3(t_3_1,t_3_2, u, y_3_1,y_3_2, Vsamp, P_2, vars, fig);
 end
 
 %% 2.5
-T = 1:t_end;
-U = u(T*dt).*ones(size(T));
+T = 1:t_end; % Define time vector
+U = u(T*dt).*ones(size(T)); % Define input
 
-[t_5_1, y_5_1] = FEuler(x0, u, vars,"PWA");
-[t_5_2, y_5_2] = ode45(@(t,y) modelPWA(t,y,u,vars, ""), [0 t_end*step], x0);
+[t_5_1, y_5_1] = FEuler(x0, u, vars); % Forward Euler integration of
+                                            % the PWA model
+[t_5_2, y_5_2] = ode45(@(t,y) modelPWA(t,y,u,vars, "")...
+    , [0 t_end*dt], x0); % ode45 integration of PWA model
 
+% Plotting
 if WorkingOn == "2.5" || WorkingOn=="all"
-% figure(fig); fig = fig+1;
-% plot(t_5_2,u(t_5_2)); hold on
-% plot(T*dt,U, "--");hold off
-% title 'Integration comparison input'
-% ylabel 'input'
-% xlabel 'time [s]'
-% legend("ODE45", "FE", 'Interpreter', 'latex')
-% saveas(gcf,'Pics/Plot_2.3_2.jpg')
+figure(fig); fig = fig+1;
+plot(t_5_2,u(t_5_2)); hold on
+plot(T*dt,U, "--");hold off
+title 'Integration comparison input'
+ylabel 'input'
+xlabel 'time [s]'
+legend("u(t)", 'Interpreter', 'latex')
+saveas(gcf,'Pics/Plot_2.5_1.jpg')
 
 figure(fig); fig = fig+1;
 plot(t_5_2,y_5_2(:, 2)); hold on
@@ -107,39 +90,12 @@ title 'Integration comparison'
 ylabel 'speed [m/s]'
 xlabel 'time [s]'
 legend("ODE45", "FE", 'Interpreter', 'latex')
-% saveas(gcf,'Pics/Plot_2.3_2.jpg')
-% close all
-% u_new = u(0:dt:t_end);
-% % V=FEuler(t_end,u,dt);
-
-end
-%% 2.7
-% [t_6, y_6] = FEuler(x0, U, vars,"MLD");
-
-x0 = 52;
-Np = 10; % Prediction horizon
-Nc = 7; % Control horizon
-lambda = 0.3;
-
-sys = MLD(vars);
-sys.dt = dt;
-sys.a_comf = 2.5;
-[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
-                                %constraints regarding v, u, delta, z
-
-vRef = 20 *ones(Np, 1);
-[C, M, b2] = costFunc(sys, vRef, Np, lambda);
-
-K = [[F, zeros(size(F,1),2*Np)];...
-    M];
-
-L = [b1; b2];
-
-if WorkingOn == "2.7" || WorkingOn=="all"
-    [u_2_7, ~] = getOptInput(x0, vRef, sys, K, L, C, Np, Neq, Nleq, "plot"); fig = fig+1;
+saveas(gcf,'Pics/Plot_2.5_2.jpg')
 end
 
-%% 2.8
+%% 2.6
+sys = MLD(vars); % Create MLD model struct
+% Unpack system
 A = sys.A;
 B1 = sys.B1; B2 = sys.B2; B3 = sys.B3; 
 E1 = sys.E1; E2 = sys.E2; E3 = sys.E3; E4 = sys.E4; 
@@ -150,33 +106,138 @@ nx = size(A, 1);
 nu = size(B1, 2);
 n = size(H, 2);
 
-T = 50;
-x0 = 55;
-vRef = 5 *ones(T+Np, 1);
+A = [[1 zeros(1, n-1)];... % v and u are as predefined
+     [0 1 zeros(1, n-2)];...
+     [E1 E2 E3 E4]]; % state is valid
+C = [1 zeros(1, n-1)]; % Minimise the speed
+ctype = ['SS', repmat('U', 1,size(E1,1))]; % Two equalities, rest upper bounds
+vartype = 'CCBBBCCC'; % State either Continuous or Binary
+
+V = 1:v_max; % Sample speeds
+figure(fig); fig = fig+1; 
+subplot(2,2, 1:2); hold on
+for u = u_min:0.2:u_max
+    u_ = @(t) u*t/t;
+    d = [];
+    for v = V
+        %MLD model
+        b = [v; u; g5];
+        [xMLD,~,status,~] = glpk (C,A,b,[],[],ctype,vartype);
+
+        xPmld = H*xMLD;
+
+        xPfe = [0;v] + vars.dt* modelPWA(1, [0;v], u_, vars, "");
+        
+        d = [d xPmld - xPfe(2)];
+    end
+    plot(V, d)
+end
+xlabel("Speed")
+ylabel("$v_{MLD} - v_{PWA}$", 'Interpreter', 'latex')
+
+subplot(2,2, 3); hold on
+V = 14.5:0.05:15.5; % Sample speeds
+for u = u_min:0.2:u_max
+    u_ = @(t) u*t/t;
+    d = [];
+    for v = V
+        %MLD model
+        b = [v; u; g5];
+        [xMLD,~,status,~] = glpk (C,A,b,[],[],ctype,vartype);
+
+        xPmld = H*xMLD;
+
+        xPfe = [0;v] + vars.dt* modelPWA(1, [0;v], u_, vars, "");
+        
+        d = [d xPmld - xPfe(2)];
+    end
+    plot(V, d, "x-")
+end
+xlabel("Speed")
+ylabel("$v_{MLD} - v_{PWA}$", 'Interpreter', 'latex')
+
+subplot(2,2, 4); hold on
+V = 29.5:0.05:30.5; % Sample speeds
+for u = u_min:0.2:u_max
+    u_ = @(t) u*t/t;
+    d = [];
+    for v = V
+        %MLD model
+        b = [v; u; g5];
+        [xMLD,~,status,~] = glpk (C,A,b,[],[],ctype,vartype);
+
+        xPmld = H*xMLD;
+
+        xPfe = [0;v] + vars.dt* modelPWA(1, [0;v], u_, vars, "");
+        
+        d = [d xPmld - xPfe(2)];
+    end
+    plot(V, d, "x-")
+end
+xlabel("Speed")
+ylabel("$v_{MLD} - v_{PWA}$", 'Interpreter', 'latex')
+
+
+
+%% 2.7
+% From here on the state x only consists of the speed v
+x0 = 52; % Initial velocity
+Np = 10; % Prediction horizon
+Nc = 7; % Control horizon
+lambda = 0.3; % Cost function lambda
+
+sys = MLD(vars); % Create MLD model struct
+sys.dt = dt;
+sys.a_comf = 2.5; % Comfortability threshold
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+vRef = 20 *ones(Np, 1); % Constant reference speed
+[C, M, b2] = costFunc(sys, vRef, Np, lambda); % Get cost function and 
+                    % additional constraints for the auxilliary states
+                    % originating from the norms
+
+K = [[F, zeros(size(F,1),2*Np)];... % Compile constraints matrix
+            M];
+
+L = [b1; b2]; % Compile constraints vector
+
+if WorkingOn == "2.7" || WorkingOn=="all"
+    % Perform MPC and retrieve optimal input
+    [u_2_7, ~] = getOptInput(x0, vRef, sys, K, L, C, Np, Neq, Nleq, "plot"); 
+    fig = fig+1;
+end
+
+%% 2.8
+T = 50; % Define number of timesteps
+x0 = 55; % Inital state
+vRef = 5 *ones(T+Np, 1); % Constant reference
 
 Np = 10; % Prediction horizon
 Nc = 7; % Control horizon
-lambda = 0.3;
+lambda = 0.3; % Cost function lambda
 
-[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
-                                %constraints regarding v, u, delta, z
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % Retrieve all time 
+                        % invariant constraints regarding v, u, delta, z
 
 u_2_8 = zeros(T, nu);
 x_2_8 = [x0; zeros(T-1, nx)];
 for k = 1:T
-vRef_k = vRef(k:k+Np-1);
-[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+vRef_k = vRef(k:k+Np-1); % Get reference at time k
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda); % Get cost function
 
 K = [[F, zeros(size(F,1),2*Np)];...
-    M];
+    M]; % Compile constraints matrix
 
-L = [b1; b2];
+L = [b1; b2]; % Compile constraints vector
 
-[u_2_8(k, :), ~] = getOptInput(x_2_8(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
-x_2_8(k+1, :) = x_2_8(k, :) + modelExact(k*dt, [0;x_2_8(k, :)], u_2_8(k, :)...
-        , vars, "SingleState");
+[u_2_8(k, :), ~] = getOptInput(x_2_8(k, :), vRef_k, sys, K, L, C...
+    , Np, Neq, Nleq, ""); % Get optimal input
+x_2_8(k+1, :) = x_2_8(k, :) + modelExact(k*dt, [0;x_2_8(k, :)]...
+    , u_2_8(k, :), vars, "SingleState"); % Integrate timestep with input
 end
 
+% Plotting
 if WorkingOn == "2.8" || WorkingOn=="all"
     figure(fig); fig = fig+1;
     subplot(2, 1, 1)
@@ -189,18 +250,18 @@ if WorkingOn == "2.8" || WorkingOn=="all"
 end
 
 %% 2.9
-T = 25/dt;
-x0 = 0.9*alpha;
+x0 = 0.9*alpha; % Define initial state
 
-Tarr = 0:dt:25;
-N = max(size(Tarr));
-vRef = zeros(N,nx);
+Tarr = 0:dt:25; % Create time array
+N = max(size(Tarr)); % Number of timesteps
+
+vRef = zeros(N,nx); % Create reference speed array
 for k = 1:N
     vRef(k) = vref(alpha, Tarr(k));
 end
 vRef = [vRef; vRef(end)*ones(Np,nx)];
 
-lambda = 0.1;
+lambda = 0.1; % Prediction horizon
 Np = 5; % Prediction horizon
 Nc = 4; % Control horizon
 
@@ -209,7 +270,7 @@ Nc = 4; % Control horizon
 
 u_2_9 = zeros(N, nu);
 x_2_9 = [x0; zeros(N-1, nx)];
-for k = 1:N
+for k = 1:N % Same loop as in 2.8
 vRef_k = vRef(k:k+Np-1);
 [C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
 
@@ -227,7 +288,7 @@ if WorkingOn == "2.9" || WorkingOn=="all"
     fig = plot2_9(0, x_2_9, u_2_9, vRef(1:N), sys.a_comf, Tarr, dt, fig, Np, Nc);
 end
 
-% Second Np, Nc combo
+% Second Np, Nc combo, exactly the same as above otherwise
 Np = 10; % Prediction horizon
 Nc = 9; % Control horizon
 
