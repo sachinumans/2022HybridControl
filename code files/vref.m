@@ -1,5 +1,5 @@
 function [v_ref] = vref(alpha,t)
-%alpha en t erin; v_ref eruit
+% Return the reference velocity as specified in Q2.9
 if t<=3
     v_ref=0.85*alpha;
 elseif t<=9

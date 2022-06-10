@@ -1,17 +1,18 @@
-m = 800;
-c = 0.4;
-b = 3700;
-u_max = 1.3;
-u_min = -1.3;
-alphamax = 2.5;
-gamma = 0.87;
-v12 = 15;
-v23 = 30;
+% Define all system paramaters as specified in the assignment
+m = 800; % mass
+c = 0.4; % friction constant
+b = 3700; % driving constant
+u_max = 1.3; % Maximum input
+u_min = -1.3; % Minimum input
+alphamax = 2.5; % Maximum acceleration
+gamma = 0.87; % Gear constant
+v12 = 15; % gear 2 switch
+v23 = 30; % gear 3 switch 
 
-g = [1,2,3];
-step=.1;
-t_end = 3*10^3;
-dt = 0.15;
+g = [1,2,3]; % gears
+step=.1; % time step size
+t_end = 3*10^3; % simulation time
+dt = 0.15; % time step size for integration
 
 % Make struct to pass to functions later
 vars.m = m; 
