@@ -1,7 +1,10 @@
 function [dx] = modelExact(t, y, u, vars, mode)
 %MODELEXACT The exact differential equations
-ut = u(t);
-
+if convertCharsToStrings(class(u)) == "function_handle"
+    ut = u(t);
+else
+    ut = u;
+end
 if mode == "gearlock"
     gear = 1;
 elseif y(2)<vars.v12
@@ -15,9 +18,12 @@ else
     gear=3;
 end
 
-
-dx = [ y(2);...
+if mode == "SingleState"
+    dx = 1/vars.m * vars.b/(1+vars.gamma*gear)*ut - 1/vars.m*vars.c*y(2)^2;
+else
+    dx = [ y(2);...
         1/vars.m * vars.b/(1+vars.gamma*gear)*ut - 1/vars.m*vars.c*y(2)^2];
+end
 
 end
 

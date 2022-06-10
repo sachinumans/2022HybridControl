@@ -1,38 +1,11 @@
-clc
-close all, clear all
-variables
-fig = 1;
-WorkingOn = "2.8";
+clc; close all; clear;
+variables % Retrieve system parameters
+fig = 1; % Figure number token
+WorkingOn = "2.9"; % Token to prevent always plotting everything
 %% Dynamics test
-% x=0;
-% v=0;
-% u=u_max;
-% for t=2:t_end
-%     if v<v12
-% %         warning("Here I am in gear 1")
-%         gear = 1;
-%     elseif v<v23
-% %         warning("Here I am in gear 2")
-%         gear=2;
-%     else
-%         gear=3;
-%     end
-%     if t>10
-%         if v(t-1)-v(t-8)<10^-5
-%             u=u_min;
-%         end
-%     if v(t-1)<0
-%         u=u_max;
-%     end
-%     end
-%     
-%     x(t)=x(t-1)+v(t-1)*step;
-%     v(t)=v(t-1)+((b/(gamma*gear+1)*u-c*v(t-1)^2)/m)*step;
-% end
-
 u = @(t) u_max + heaviside(t-100)*(-u_max + u_min) + heaviside(t-120)*(-u_min + u_max)...
-    + heaviside(t-170)*(-u_max);
-[t_0_1,y_0_1] = ode45(@(t,y) modelExact(t,y,u,vars, ""), [0 t_end*step], [0 0]);
+    + heaviside(t-170)*(-u_max); % Input function
+[t_0_1,y_0_1] = ode45(@(t,y) modelExact(t,y,u,vars, ""), [0 t_end*step], [0 0]); % Integration
 
 if WorkingOn == "dyntest" || WorkingOn=="all"
 figure(fig); fig = fig+1;
@@ -114,7 +87,7 @@ end
 T = 1:t_end;
 U = u(T*dt).*ones(size(T));
 
-[t_5_1, y_5_1] = FEuler(x0, U, vars,"PWA");
+[t_5_1, y_5_1] = FEuler(x0, u, vars,"PWA");
 [t_5_2, y_5_2] = ode45(@(t,y) modelPWA(t,y,u,vars, ""), [0 t_end*step], x0);
 
 if WorkingOn == "2.5" || WorkingOn=="all"
@@ -178,8 +151,8 @@ nu = size(B1, 2);
 n = size(H, 2);
 
 T = 50;
-x0 = 25;
-vRef = 15 *ones(T+Np, 1);
+x0 = 55;
+vRef = 5 *ones(T+Np, 1);
 
 Np = 10; % Prediction horizon
 Nc = 7; % Control horizon
@@ -189,7 +162,7 @@ lambda = 0.3;
                                 %constraints regarding v, u, delta, z
 
 u_2_8 = zeros(T, nu);
-x_2_8 = zeros(T, nx);
+x_2_8 = [x0; zeros(T-1, nx)];
 for k = 1:T
 vRef_k = vRef(k:k+Np-1);
 [C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
@@ -199,15 +172,14 @@ K = [[F, zeros(size(F,1),2*Np)];...
 
 L = [b1; b2];
 
-[u_2_8(k, :), x_2_8(k, :)] = getOptInput(x0, vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
-
-x0 = x_2_8(k, :);
+[u_2_8(k, :), ~] = getOptInput(x_2_8(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_8(k+1, :) = x_2_8(k, :) + modelExact(k*dt, [0;x_2_8(k, :)], u_2_8(k, :)...
+        , vars, "SingleState");
 end
 
 if WorkingOn == "2.8" || WorkingOn=="all"
     figure(fig); fig = fig+1;
     subplot(2, 1, 1)
-    X = [ones(1, nx) zeros(1, n*Np+2*Np-nx)]; % states
     plot(x_2_8);
     title("Velocities")
     
@@ -216,8 +188,78 @@ if WorkingOn == "2.8" || WorkingOn=="all"
     title("Input")
 end
 
-%% 2.8
+%% 2.9
+T = 25/dt;
+x0 = 0.9*alpha;
 
+Tarr = 0:dt:25;
+N = max(size(Tarr));
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
 
+lambda = 0.1;
+Np = 5; % Prediction horizon
+Nc = 4; % Control horizon
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_9 = zeros(N, nu);
+x_2_9 = [x0; zeros(N-1, nx)];
+for k = 1:N
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_9(k, :), ~] = getOptInput(x_2_9(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_9(k+1, :) = x_2_9(k, :) + modelExact(k*dt, [0;x_2_9(k, :)], u_2_9(k, :)...
+        , vars, "SingleState");
+end
+
+if WorkingOn == "2.9" || WorkingOn=="all"
+    fig = plot2_9(0, x_2_9, u_2_9, vRef(1:N), sys.a_comf, Tarr, dt, fig, Np, Nc);
+end
+
+% Second Np, Nc combo
+Np = 10; % Prediction horizon
+Nc = 9; % Control horizon
+
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_9b = zeros(N, nu);
+x_2_9b = [x0; zeros(N-1, nx)];
+for k = 1:N
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_9b(k, :), ~] = getOptInput(x_2_9b(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_9b(k+1, :) = x_2_9b(k, :) + modelExact(k*dt, [0;x_2_9b(k, :)], u_2_9b(k, :)...
+        , vars, "SingleState");
+end
+
+if WorkingOn == "2.9" || WorkingOn=="all"
+    fig = plot2_9(0, x_2_9b, u_2_9b, vRef(1:N), sys.a_comf, Tarr, dt, fig, Np, Nc);
+end
+
+%% 2.10
 
 

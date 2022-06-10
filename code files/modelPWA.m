@@ -1,6 +1,8 @@
 function [dx] = modelPWA(t, y, u, vars, mode)
 %MODELEXACT The exact differential equations
-ut = u(t);
+if class(u) == 'function_handle'
+    ut = u(t);
+end
 
 if mode == "gearlock"
     gear = 1;
