@@ -504,7 +504,7 @@ plot([2 3 4], [toc2i toc3i toc4i], "o-");
 xlabel("$N_p$", 'Interpreter', 'latex')
 ylabel("Runtime [s]")
 title("Mean runtimes, N=30")
-legend("Implicit", "Explicit")
+legend("Explicit", "Implicit")
 end
 
 tEnd = toc(tStart) 
