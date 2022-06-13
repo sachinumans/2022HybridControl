@@ -499,8 +499,8 @@ toc4i = toc4i/idx;
 
 if WorkingOn == "2.10" || WorkingOn=="all"
 figure(fig); fig = fig+1; hold on
-plot([2 3 4], [toc2 toc3 toc4]);
-plot([2 3 4], [toc2i toc3i toc4i]);
+plot([2 3 4], [toc2 toc3 toc4], "o-");
+plot([2 3 4], [toc2i toc3i toc4i], "o-");
 xlabel("$N_p$", 'Interpreter', 'latex')
 ylabel("Runtime [s]")
 title("Mean runtimes, N=30")
