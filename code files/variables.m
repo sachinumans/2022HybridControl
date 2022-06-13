@@ -26,4 +26,5 @@ vars.v23 = v23;
 vars.g = g;
 vars.t_end = t_end;
 vars.dt = dt;
+vars.a_comf = 2.5;
 

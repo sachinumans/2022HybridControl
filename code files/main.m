@@ -1,4 +1,4 @@
-clc; close all; clear;
+clc; close all; clear; tStart = tic;
 variables % Retrieve system parameters
 fig = 1; % Figure number token
 WorkingOn = "all"; % Token to prevent always plotting everything
@@ -323,4 +323,188 @@ end
 
 %% 2.10
 
+% Create explicit formulas
+Np = 2;
+explMPC2 = getexplMPCfun(vars, lambda, Np);
 
+Np = 3;
+explMPC3 = getexplMPCfun(vars, lambda, Np);
+
+Np = 4;
+explMPC4 = getexplMPCfun(vars, lambda, Np);
+
+% Runtime counters
+toc2 = 0; toc2i = 0; toc3 = 0; toc3i = 0; toc4 = 0; toc4i = 0;
+
+for idx = 1:30
+% Simulate with horizon 2
+Np = 2;
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+u_2_10a = zeros(N, nu);
+x_2_10a = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+    u_2_10a(k) = explMPC2.evaluate(x_2_10a(k, :), 'x.reference', vRef(k));
+    x_2_10a(k+1, :) = x_2_10a(k, :) + modelExact(k*dt, [0;x_2_10a(k, :)], u_2_10a(k, :)...
+        , vars, "SingleState");
+end
+toc2 = toc2 + toc;
+
+% Implicit method
+Np = 2; % Prediction horizon
+Nc = 2; % Control horizon
+
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_10ai = zeros(N, nu);
+x_2_10ai = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_10ai(k, :), ~] = getOptInput(x_2_10ai(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_10ai(k+1, :) = x_2_10ai(k, :) + modelExact(k*dt, [0;x_2_10ai(k, :)], u_2_10ai(k, :)...
+        , vars, "SingleState");
+end
+toc2i = toc2i + toc;
+
+
+% Simulate with horizon 3
+Np = 3;
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+u_2_10b = zeros(N, nu);
+x_2_10b = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+    u_2_10b(k) = explMPC3.evaluate(x_2_10b(k, :), 'x.reference', vRef(k));
+    x_2_10b(k+1, :) = x_2_10b(k, :) + modelExact(k*dt, [0;x_2_10b(k, :)], u_2_10b(k, :)...
+        , vars, "SingleState");
+end
+toc3 = toc3 + toc;
+
+
+% Implicit method
+Np = 3; % Prediction horizon
+Nc = 3; % Control horizon
+
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_10bi = zeros(N, nu);
+x_2_10bi = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_10bi(k, :), ~] = getOptInput(x_2_10bi(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_10bi(k+1, :) = x_2_10bi(k, :) + modelExact(k*dt, [0;x_2_10bi(k, :)], u_2_10bi(k, :)...
+        , vars, "SingleState");
+end
+toc3i = toc3i + toc;
+
+
+% Simulate with horizon 4
+Np = 4;
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+u_2_10c = zeros(N, nu);
+x_2_10c = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+    u_2_10c(k) = explMPC4.evaluate(x_2_10c(k, :), 'x.reference', vRef(k));
+    x_2_10c(k+1, :) = x_2_10c(k, :) + modelExact(k*dt, [0;x_2_10c(k, :)], u_2_10c(k, :)...
+        , vars, "SingleState");
+end
+toc4 = toc4 + toc;
+
+
+% Implicit method
+Np = 4; % Prediction horizon
+Nc = 4; % Control horizon
+
+vRef = zeros(N,nx);
+for k = 1:N
+    vRef(k) = vref(alpha, Tarr(k));
+end
+vRef = [vRef; vRef(end)*ones(Np,nx)];
+
+[F, b1, Neq, Nleq] = optContstraint(sys, Np, Nc); % All time invariant 
+                                %constraints regarding v, u, delta, z
+
+u_2_10ci = zeros(N, nu);
+x_2_10ci = [x0; zeros(N-1, nx)];
+tic
+for k = 1:N
+vRef_k = vRef(k:k+Np-1);
+[C, M, b2] = costFunc(sys, vRef_k, Np, lambda);
+
+K = [[F, zeros(size(F,1),2*Np)];...
+    M];
+
+L = [b1; b2];
+
+[u_2_10ci(k, :), ~] = getOptInput(x_2_10ci(k, :), vRef_k, sys, K, L, C, Np, Neq, Nleq, "");
+x_2_10ci(k+1, :) = x_2_10ci(k, :) + modelExact(k*dt, [0;x_2_10ci(k, :)], u_2_10ci(k, :)...
+        , vars, "SingleState");
+end
+toc4i = toc4i + toc;
+end
+
+% Average runtimes
+toc2 = toc2/idx;
+toc2i = toc2i/idx;
+toc3 = toc3/idx;
+toc3i = toc3i/idx;
+toc4 = toc4/idx;
+toc4i = toc4i/idx;
+
+if WorkingOn == "2.10" || WorkingOn=="all"
+figure(fig); fig = fig+1; hold on
+plot([2 3 4], [toc2 toc3 toc4]);
+plot([2 3 4], [toc2i toc3i toc4i]);
+xlabel("$N_p$", 'Interpreter', 'latex')
+ylabel("Runtime [s]")
+title("Mean runtimes, N=30")
+legend("Implicit", "Explicit")
+end
+
+tEnd = toc(tStart) 
